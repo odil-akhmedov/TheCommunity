@@ -17,6 +17,7 @@ namespace TheCommunity
         public Location()
         {
             this.Communities = new HashSet<Community>();
+            this.SingleTasks = new HashSet<SingleTask>();
         }
     
         public int Id { get; set; }
@@ -26,5 +27,6 @@ namespace TheCommunity
         public string GoogleMap { get; set; }
     
         public virtual ICollection<Community> Communities { get; set; }
+        public virtual ICollection<SingleTask> SingleTasks { get; set; }
     }
 }

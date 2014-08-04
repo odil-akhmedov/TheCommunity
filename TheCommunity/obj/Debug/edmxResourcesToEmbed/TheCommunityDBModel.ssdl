@@ -11,6 +11,14 @@
     <Property Name="ImgSrc" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="LocationId" Type="int" Nullable="false" />
   </EntityType>
+  <EntityType Name="CommunityTask">
+    <Key>
+      <PropertyRef Name="CommId" />
+      <PropertyRef Name="TaskId" />
+    </Key>
+    <Property Name="CommId" Type="int" Nullable="false" />
+    <Property Name="TaskId" Type="int" Nullable="false" />
+  </EntityType>
   <EntityType Name="Location">
     <Key>
       <PropertyRef Name="Id" />
@@ -20,6 +28,14 @@
     <Property Name="Zip" Type="int" Nullable="false" />
     <Property Name="ImgSrc" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="GoogleMap" Type="varchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="LocationTask">
+    <Key>
+      <PropertyRef Name="LocationId" />
+      <PropertyRef Name="TaskId" />
+    </Key>
+    <Property Name="LocationId" Type="int" Nullable="false" />
+    <Property Name="TaskId" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="Member">
     <Key>
@@ -32,7 +48,15 @@
     <Property Name="AboutMe" Type="text" />
     <Property Name="CommunityId" Type="int" Nullable="false" />
   </EntityType>
-  <EntityType Name="Task">
+  <EntityType Name="MemberTask">
+    <Key>
+      <PropertyRef Name="MemberId" />
+      <PropertyRef Name="TaskId" />
+    </Key>
+    <Property Name="MemberId" Type="int" Nullable="false" />
+    <Property Name="TaskId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SingleTask">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
@@ -43,8 +67,8 @@
     <Property Name="Description" Type="text" Nullable="false" />
     <Property Name="Budget" Type="money" Nullable="false" />
     <Property Name="Status" Type="bit" Nullable="false" />
-    <Property Name="CommunityId" Type="int" />
-    <Property Name="MemberId" Type="int" />
+    <Property Name="Priority" Type="int" />
+    <Property Name="Flag" Type="bit" />
   </EntityType>
   <Association Name="FK_Community_Location">
     <End Role="Location" Type="Self.Location" Multiplicity="1" />
@@ -55,6 +79,54 @@
       </Principal>
       <Dependent Role="Community">
         <PropertyRef Name="LocationId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommunityTask_Community">
+    <End Role="Community" Type="Self.Community" Multiplicity="1" />
+    <End Role="CommunityTask" Type="Self.CommunityTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Community">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CommunityTask">
+        <PropertyRef Name="CommId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommunityTask_SingleTask">
+    <End Role="SingleTask" Type="Self.SingleTask" Multiplicity="1" />
+    <End Role="CommunityTask" Type="Self.CommunityTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SingleTask">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CommunityTask">
+        <PropertyRef Name="TaskId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_LocationTask_Location">
+    <End Role="Location" Type="Self.Location" Multiplicity="1" />
+    <End Role="LocationTask" Type="Self.LocationTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Location">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="LocationTask">
+        <PropertyRef Name="LocationId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_LocationTask_SingleTask">
+    <End Role="SingleTask" Type="Self.SingleTask" Multiplicity="1" />
+    <End Role="LocationTask" Type="Self.LocationTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SingleTask">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="LocationTask">
+        <PropertyRef Name="TaskId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -70,50 +142,69 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_Task_Community">
-    <End Role="Community" Type="Self.Community" Multiplicity="0..1" />
-    <End Role="Task" Type="Self.Task" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Community">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="Task">
-        <PropertyRef Name="CommunityId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_Task_Member">
-    <End Role="Member" Type="Self.Member" Multiplicity="0..1" />
-    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+  <Association Name="FK_MemberTask_Member">
+    <End Role="Member" Type="Self.Member" Multiplicity="1" />
+    <End Role="MemberTask" Type="Self.MemberTask" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="Member">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Task">
+      <Dependent Role="MemberTask">
         <PropertyRef Name="MemberId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_MemberTask_SingleTask">
+    <End Role="SingleTask" Type="Self.SingleTask" Multiplicity="1" />
+    <End Role="MemberTask" Type="Self.MemberTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SingleTask">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="MemberTask">
+        <PropertyRef Name="TaskId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <EntityContainer Name="TheCommunityDBModelStoreContainer">
     <EntitySet Name="Community" EntityType="Self.Community" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="CommunityTask" EntityType="Self.CommunityTask" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="LocationTask" EntityType="Self.LocationTask" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Member" EntityType="Self.Member" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="Task" EntityType="Self.Task" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="MemberTask" EntityType="Self.MemberTask" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SingleTask" EntityType="Self.SingleTask" Schema="dbo" store:Type="Tables" />
     <AssociationSet Name="FK_Community_Location" Association="Self.FK_Community_Location">
       <End Role="Location" EntitySet="Location" />
       <End Role="Community" EntitySet="Community" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommunityTask_Community" Association="Self.FK_CommunityTask_Community">
+      <End Role="Community" EntitySet="Community" />
+      <End Role="CommunityTask" EntitySet="CommunityTask" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommunityTask_SingleTask" Association="Self.FK_CommunityTask_SingleTask">
+      <End Role="SingleTask" EntitySet="SingleTask" />
+      <End Role="CommunityTask" EntitySet="CommunityTask" />
+    </AssociationSet>
+    <AssociationSet Name="FK_LocationTask_Location" Association="Self.FK_LocationTask_Location">
+      <End Role="Location" EntitySet="Location" />
+      <End Role="LocationTask" EntitySet="LocationTask" />
+    </AssociationSet>
+    <AssociationSet Name="FK_LocationTask_SingleTask" Association="Self.FK_LocationTask_SingleTask">
+      <End Role="SingleTask" EntitySet="SingleTask" />
+      <End Role="LocationTask" EntitySet="LocationTask" />
     </AssociationSet>
     <AssociationSet Name="FK_Member_Community" Association="Self.FK_Member_Community">
       <End Role="Community" EntitySet="Community" />
       <End Role="Member" EntitySet="Member" />
     </AssociationSet>
-    <AssociationSet Name="FK_Task_Community" Association="Self.FK_Task_Community">
-      <End Role="Community" EntitySet="Community" />
-      <End Role="Task" EntitySet="Task" />
-    </AssociationSet>
-    <AssociationSet Name="FK_Task_Member" Association="Self.FK_Task_Member">
+    <AssociationSet Name="FK_MemberTask_Member" Association="Self.FK_MemberTask_Member">
       <End Role="Member" EntitySet="Member" />
-      <End Role="Task" EntitySet="Task" />
+      <End Role="MemberTask" EntitySet="MemberTask" />
+    </AssociationSet>
+    <AssociationSet Name="FK_MemberTask_SingleTask" Association="Self.FK_MemberTask_SingleTask">
+      <End Role="SingleTask" EntitySet="SingleTask" />
+      <End Role="MemberTask" EntitySet="MemberTask" />
     </AssociationSet>
   </EntityContainer>
 </Schema>

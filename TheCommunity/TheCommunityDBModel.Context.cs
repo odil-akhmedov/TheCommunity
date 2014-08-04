@@ -25,9 +25,9 @@ namespace TheCommunity
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<SingleTask> SingleTasks { get; set; }
         public virtual DbSet<Community> Communities { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Member> Members { get; set; }
-        public virtual DbSet<SingleTask> SingleTasks { get; set; }
     }
 }

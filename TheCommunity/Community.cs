@@ -17,7 +17,7 @@ namespace TheCommunity
         public Community()
         {
             this.Members = new HashSet<Member>();
-            this.Tasks = new HashSet<SingleTask>();
+            this.SingleTasks = new HashSet<SingleTask>();
         }
     
         public int Id { get; set; }
@@ -29,6 +29,6 @@ namespace TheCommunity
     
         public virtual Location Location { get; set; }
         public virtual ICollection<Member> Members { get; set; }
-        public virtual ICollection<SingleTask> Tasks { get; set; }
+        public virtual ICollection<SingleTask> SingleTasks { get; set; }
     }
 }
